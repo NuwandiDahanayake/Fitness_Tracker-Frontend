@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./SetGoals.css";
+
+const API_URL = "http://localhost:5000/goals";
 
 const SetGoals = () => {
   const navigate = useNavigate();
@@ -14,21 +17,44 @@ const SetGoals = () => {
   const [editMode, setEditMode] = useState(false);
   const [goalToEdit, setGoalToEdit] = useState(null);
 
-  const handleSubmit = (e) => {
+  // Fetch goals from the backend
+  useEffect(() => {
+    axios
+      .get(API_URL)
+      .then((response) => {
+        setGoals(response.data);
+      })
+      .catch((error) => console.error("Error fetching goals:", error));
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newGoal = { goalType, goalValue, goalDuration, presetGoal };
 
-    if (editMode) {
-      const updatedGoals = goals.map((goal) =>
-        goal === goalToEdit ? newGoal : goal
-      );
-      setGoals(updatedGoals);
-      setEditMode(false);
-      setGoalToEdit(null);
-    } else {
-      setGoals([...goals, newGoal]);
+    try {
+      if (editMode) {
+        // Update existing goal
+        await axios.put(`${API_URL}/${goalToEdit._id}`, newGoal);
+        setGoals(
+          goals.map((goal) => (goal._id === goalToEdit._id ? newGoal : goal))
+        );
+        setEditMode(false);
+        setGoalToEdit(null);
+      } else {
+        // Add new goal
+        const response = await axios.post(API_URL, newGoal);
+        setGoals([...goals, response.data]);
+      }
+      alert("Goal Saved Successfully!");
+    } catch (error) {
+      console.error("Error saving goal:", error);
+      alert("Failed to save goal.");
     }
-    alert("Goal Saved Successfully!");
+
+    setGoalType("");
+    setGoalValue("");
+    setGoalDuration("");
+    setPresetGoal("");
   };
 
   const handleEdit = (goal) => {
@@ -44,9 +70,15 @@ const SetGoals = () => {
     alert(`Goal ${goal.goalType} paused!`);
   };
 
-  const handleReset = (goal) => {
-    setGoals(goals.filter((g) => g !== goal));
-    alert(`Goal ${goal.goalType} has been reset!`);
+  const handleReset = async (goal) => {
+    try {
+      await axios.delete(`${API_URL}/${goal._id}`);
+      setGoals(goals.filter((g) => g._id !== goal._id));
+      alert(`Goal ${goal.goalType} has been reset!`);
+    } catch (error) {
+      console.error("Error resetting goal:", error);
+      alert("Failed to reset goal.");
+    }
   };
 
   return (
@@ -54,7 +86,7 @@ const SetGoals = () => {
       <button className="back-button" onClick={() => navigate("/dashboard")}>
         <IoArrowBack className="back-icon" /> Dashboard
       </button>
-      {/*Navigation Bar */}
+      {/* Navigation Bar */}
       <nav className="navbar">
         <h2 className="logo">FitSync</h2>
         <ul className="nav-links">
