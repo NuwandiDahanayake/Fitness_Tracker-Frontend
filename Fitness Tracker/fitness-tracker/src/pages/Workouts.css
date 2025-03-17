@@ -133,3 +133,60 @@
   background: linear-gradient(135deg, #d43f50, #b82132);
   transform: scale(1.05);
 }
+
+.workout-list {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  max-width: 450px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.workout-list h2 {
+  color: #774360;
+}
+
+.workout-item:hover {
+  transform: scale(1.02);
+}
+
+.workout-item h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #d2665a;
+}
+
+.workout-item p {
+  color: #555;
+}
+
+.workout-actions {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+.workout-actions button {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: none;
+  color: #fff;
+  background-color: #4b4376;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
+
+.workout-actions button:hover {
+  background: #56a5e2;
+}
